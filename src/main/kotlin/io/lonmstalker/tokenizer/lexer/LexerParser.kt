@@ -7,56 +7,81 @@ import io.netty.util.internal.StringUtil.SPACE
  * Parser of text to lexical items action tree
  */
 class LexerParser {
+    private val tokenFactory = TokenFactory()
 
-    fun parse(functionBlock: String, ctx: FunctionContext) {
-        var nextItem = true
-        var isStart = false
-
-        var endIndex = 0
-        var startIndex = 0
-
-        var currentItem: LexicalItem? = null
-        var previousItem: LexicalItem? = null
-
+    /**
+     * @throws io.lonmstalker.tokenizer.exception.CompileException - token not supported or reserved word
+     */
+    fun parse(functionBlock: String, ctx: FunctionContext, startLine: Int) {
         val chars = functionBlock.toCharArray()
-        for ((index, char) in chars.withIndex()) {
-            if (char == SPACE) {
-                if (isStart) {
-                    endIndex = index - 1
-                }
-                nextItem = true
-                startIndex = index + 1
-                continue
+        val lexerContext = LexerContext(currentLine = startLine, functionContext = ctx)
+
+        chars.forEach loop@{ char ->
+            if (!lexerContext.isStart && !char.isWhitespace()) {
+                lexerContext.isStart = true
             }
 
-            if (!isStart) {
-                isStart = true
+            lexerContext.shiftIndex(char) { return@loop }
+
+            if (lexerContext.endNextItem) {
+                lexerContext.addNextItem(chars)
             }
 
-            if (nextItem) {
-                val prePreviousItem = previousItem
-                previousItem = currentItem
-                currentItem = this.toItem(chars.copyOfRange(startIndex, endIndex))
-
-                previousItem?.add(prePreviousItem, currentItem)
-                previousItem?.let { this.isSupport(it) }
-            }
-
-            nextItem = false
+            lexerContext.endNextItem = false
         }
-
     }
 
-    private fun toItem(chars: CharArray): LexicalItem {
-
+    /**
+     * Shift start and end indexes, that use for find tokens
+     */
+    private inline fun LexerContext.shiftIndex(char: Char, continueFunc: () -> Unit) {
+        if (char == SPACE) {
+            if (!this.startNextItem) {
+                this.endNextItem = true
+            }
+            if (this.isStart) {
+                this.startNextItem = true
+            }
+            this.startIndex++
+            continueFunc.invoke()
+        } else if (char.isWhitespace()) {
+            this.nextLine = true
+        } else {
+            this.endIndex++
+            this.startNextItem = false
+        }
     }
+
+    /**
+     * Added new item in a tree
+     */
+    private fun LexerContext.addNextItem(chars: CharArray) {
+        val prePreviousItem = this.previousItem
+
+        this.previousItem = this.currentItem
+        this.currentItem = this.toItem(chars)
+
+        this.previousItem?.let {
+            it.add(prePreviousItem, this.currentItem)
+            checkSupport(it)
+        }
+    }
+
+    private fun LexerContext.toItem(chars: CharArray): LexicalItem =
+        if (this.endIndex - this.startIndex == 1) {
+            tokenFactory.findToken(chars[this.endIndex], this)
+        } else {
+            tokenFactory.findToken(String(chars.copyOfRange(this.startIndex, this.endIndex)), this)
+        }
 
     /**
      * Can validate only previous, because of when parse current don't know next item
      */
-    private fun isSupport(previousItem: LexicalItem) {
+    private fun checkSupport(previousItem: LexicalItem) {
         if (!previousItem.isSupport()) {
-            previousItem.invalidateToken("can't compile")
+            val prev = previousItem.prevToken?.getName()
+            val next = previousItem.nextToken?.getName()
+            previousItem.invalidateToken("$prev can't apply to $next by ${previousItem.getName()} ")
         }
     }
 

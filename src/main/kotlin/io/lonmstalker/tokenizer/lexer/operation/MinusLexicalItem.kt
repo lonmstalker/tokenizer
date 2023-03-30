@@ -7,13 +7,12 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 /**
  * Operation minus: 1 - 1
  */
-class MinusLexicalItem(
-    prevToken: LexicalItem,
-    nextToken: LexicalItem
-) : LexicalItem(prevToken, nextToken) {
+class MinusLexicalItem : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.OPERATION
 
-    override fun isSupport(prevToken: LexicalToken, nextToken: LexicalToken): Boolean =
+    override fun isSupport(): Boolean =
         super.isValueTokens() && super.isEqualTypes()
+
+    override fun getName(): String = "minus"
 }

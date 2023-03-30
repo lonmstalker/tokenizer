@@ -7,13 +7,12 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 /**
  * Operation division: 1 / 1
  */
-class DivisionLexicalItem(
-    prevToken: LexicalItem,
-    nextToken: LexicalItem
-) : LexicalItem(prevToken, nextToken) {
+class DivisionLexicalItem : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.OPERATION
 
-    override fun isSupport(prevToken: LexicalToken, nextToken: LexicalToken): Boolean =
+    override fun isSupport(): Boolean =
         super.isValueTokens() && super.isEqualTypes()
+
+    override fun getName(): String = "division"
 }

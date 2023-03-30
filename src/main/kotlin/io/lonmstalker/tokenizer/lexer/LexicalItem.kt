@@ -2,17 +2,17 @@ package io.lonmstalker.tokenizer.lexer
 
 import io.lonmstalker.tokenizer.enums.LexicalType
 import io.lonmstalker.tokenizer.enums.Types
-import io.lonmstalker.tokenizer.exception.CompileException
+import io.lonmstalker.tokenizer.utils.CompileUtils.compileError
 
 /**
  * Action tree
  */
 abstract class LexicalItem(
-    private val line: Int,
-    private val startItemIndex: Int,
-    private val endItemIndex: Int,
-    private var prevToken: LexicalItem? = null,
-    private var nextToken: LexicalItem? = null
+    private var line: Int = 0,
+    private var endItemIndex: Int = 0,
+    private var startItemIndex: Int = 0,
+    var prevToken: LexicalItem? = null,
+    var nextToken: LexicalItem? = null
 ) : LexicalToken {
 
     @Throws(UnsupportedOperationException::class)
@@ -25,8 +25,14 @@ abstract class LexicalItem(
         this.nextToken = nextToken
     }
 
+    override fun setIndex(line: Int, startIndex: Int, endIndex: Int) {
+        this.line = line
+        this.endItemIndex = endIndex
+        this.startItemIndex = startIndex
+    }
+
     override fun invalidateToken(message: String) {
-        throw CompileException("line: $line, index: $startItemIndex-$endItemIndex, message: $message")
+        compileError(line, startItemIndex, endItemIndex, message)
     }
 
     fun isValueTokens() = this.isValueType(prevToken) && this.isValueType(nextToken)
@@ -36,8 +42,7 @@ abstract class LexicalItem(
 
     @Throws(UnsupportedOperationException::class)
     fun isAtLeastOneString(): Boolean =
-        prevToken?.getValueType() == Types.STRING
-                || nextToken?.getValueType() == Types.STRING
+        prevToken?.getValueType() == Types.STRING || nextToken?.getValueType() == Types.STRING
 
     fun bothTokensEqualLexicalType(type: LexicalType) =
         prevToken?.getLexicalType() == type && nextToken?.getLexicalType() == type

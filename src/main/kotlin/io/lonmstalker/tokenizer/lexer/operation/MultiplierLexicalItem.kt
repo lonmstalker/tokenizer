@@ -7,13 +7,12 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 /**
  * Operation multiply: 1 * 1
  */
-class MultiplierLexicalItem(
-    prevToken: LexicalItem,
-    nextToken: LexicalItem
-) : LexicalItem(prevToken, nextToken) {
+class MultiplierLexicalItem : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.OPERATION
 
-    override fun isSupport(prevToken: LexicalToken, nextToken: LexicalToken): Boolean =
+    override fun isSupport(): Boolean =
         super.isValueTokens() && super.isEqualTypes()
+
+    override fun getName(): String = "multiply"
 }

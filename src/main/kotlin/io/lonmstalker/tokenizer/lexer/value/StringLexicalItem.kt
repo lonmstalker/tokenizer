@@ -7,10 +7,15 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 /**
  * Text holder: "hello"
  */
-class StringLexicalItem(val value: String?) : LexicalItem() {
+class StringLexicalItem(
+    val value: String?
+) : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.VALUE
 
     override fun isSupport(): Boolean =
         super.bothTokensEqualLexicalType(LexicalType.OPERATION)
+
+    override fun getName(): String = String::class.java.simpleName
+
 }

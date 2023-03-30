@@ -13,4 +13,6 @@ class EqualLexicalItem : LexicalItem() {
 
     override fun isSupport(): Boolean =
         super.isValueTokens() && super.isEqualTypes()
+
+    override fun getName(): String = "equal"
 }

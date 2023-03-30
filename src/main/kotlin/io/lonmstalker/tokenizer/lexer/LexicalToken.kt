@@ -9,4 +9,6 @@ interface LexicalToken {
     fun add(prevToken: LexicalItem?, nextToken: LexicalItem?)
     fun isSupport(): Boolean
     fun invalidateToken(message: String)
+    fun getName(): String
+    fun setIndex(line: Int, startIndex: Int, endIndex: Int)
 }

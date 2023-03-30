@@ -6,10 +6,14 @@ import io.lonmstalker.tokenizer.lexer.LexicalItem
 /**
  * Integer holder: 1
  */
-class IntLexicalItem(val value: Int?) : LexicalItem() {
+class IntLexicalItem(
+    val value: Int?,
+) : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.VALUE
 
     override fun isSupport(): Boolean =
         super.bothTokensEqualLexicalType(LexicalType.OPERATION)
+
+    override fun getName(): String = Int::class.java.simpleName
 }

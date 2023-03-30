@@ -7,10 +7,12 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 /**
  * Operation assign: var a = 1
  */
-class AssignLexicalItem() : LexicalItem() {
+class AssignLexicalItem : LexicalItem() {
 
     override fun getLexicalType(): LexicalType = LexicalType.OPERATION
 
     override fun isSupport(): Boolean =
         super.isValueTokens() && super.isEqualTypes()
+
+    override fun getName(): String = "assign"
 }
