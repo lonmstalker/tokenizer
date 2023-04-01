@@ -69,9 +69,9 @@ class LexerParser {
 
     private fun LexerContext.toItem(chars: CharArray): LexicalItem =
         if (this.endIndex - this.startIndex == 1) {
-            tokenFactory.findToken(chars[this.endIndex], this)
+            tokenFactory.findToken(chars[this.endIndex])
         } else {
-            tokenFactory.findToken(String(chars.copyOfRange(this.startIndex, this.endIndex)), this)
+            tokenFactory.findToken(chars.copyOfRange(this.startIndex, this.endIndex))
         }
 
     /**

@@ -1,7 +1,7 @@
 package io.lonmstalker.tokenizer.lexer
 
 import io.lonmstalker.tokenizer.enums.LexicalType
-import io.lonmstalker.tokenizer.enums.Types
+import io.lonmstalker.tokenizer.enums.Tokens
 import io.lonmstalker.tokenizer.utils.CompileUtils.compileError
 
 /**
@@ -16,7 +16,7 @@ abstract class LexicalItem(
 ) : LexicalToken {
 
     @Throws(UnsupportedOperationException::class)
-    override fun getValueType(): Types {
+    override fun getValueType(): Tokens.Types {
         throw UnsupportedOperationException("no value or call item")
     }
 
@@ -42,7 +42,7 @@ abstract class LexicalItem(
 
     @Throws(UnsupportedOperationException::class)
     fun isAtLeastOneString(): Boolean =
-        prevToken?.getValueType() == Types.STRING || nextToken?.getValueType() == Types.STRING
+        prevToken?.getValueType() == Tokens.Types.STRING || nextToken?.getValueType() == Tokens.Types.STRING
 
     fun bothTokensEqualLexicalType(type: LexicalType) =
         prevToken?.getLexicalType() == type && nextToken?.getLexicalType() == type

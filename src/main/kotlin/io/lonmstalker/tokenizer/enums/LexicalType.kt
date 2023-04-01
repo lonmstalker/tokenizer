@@ -5,5 +5,7 @@ enum class LexicalType {
     VALUE,
     IDENTIFIER,
     CALL,
-    NEW_LINE
+    NEW_LINE,
+    KEYWORD,
+    FLOW
 }
