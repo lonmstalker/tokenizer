@@ -4,7 +4,8 @@ import io.lonmstalker.tokenizer.lexer.operators.FlowLexicalItem
 import java.util.function.Predicate
 
 class FlowLexicalValidator : Predicate<FlowLexicalItem> {
+
     override fun test(t: FlowLexicalItem): Boolean {
-        TODO("Not yet implemented")
+        return true // todo: add realization
     }
 }

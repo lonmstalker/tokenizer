@@ -9,5 +9,5 @@ class CallLexicalItem(
 ) : LexicalItem() {
     override fun getLexicalType(): LexicalType = LexicalType.CALL
     override fun isSupport(): Boolean = false
-    override fun getName(): String = "function call"
+    override fun getName(): String = "Function call"
 }

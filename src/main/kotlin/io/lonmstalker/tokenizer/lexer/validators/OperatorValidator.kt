@@ -5,6 +5,6 @@ import java.util.function.Predicate
 
 class OperatorValidator : Predicate<OperatorLexicalItem> {
     override fun test(t: OperatorLexicalItem): Boolean {
-        TODO("Not yet implemented")
+        return true // todo: add realization
     }
 }

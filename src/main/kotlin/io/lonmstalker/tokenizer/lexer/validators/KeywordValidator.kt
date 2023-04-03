@@ -5,6 +5,6 @@ import java.util.function.Predicate
 
 class KeywordValidator : Predicate<KeywordLexicalItem> {
     override fun test(t: KeywordLexicalItem): Boolean {
-        TODO("Not yet implemented")
+        return true // todo: add realization
     }
 }

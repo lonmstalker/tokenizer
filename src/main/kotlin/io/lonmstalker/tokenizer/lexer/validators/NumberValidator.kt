@@ -5,6 +5,6 @@ import java.util.function.Predicate
 
 class NumberValidator : Predicate<ValueLexicalItem> {
     override fun test(t: ValueLexicalItem): Boolean {
-        TODO("Not yet implemented")
+        return true // todo: add realization
     }
 }

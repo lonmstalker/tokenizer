@@ -6,6 +6,6 @@ import java.util.function.Predicate
 
 class IdentifierValidator : Predicate<IdentifierLexicalItem> {
     override fun test(t: IdentifierLexicalItem): Boolean {
-        TODO("Not yet implemented")
+        return true // todo: add realization
     }
 }

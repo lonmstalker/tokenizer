@@ -6,6 +6,6 @@ import io.lonmstalker.tokenizer.lexer.LexicalToken
 
 class NewLineLexicalItem : LexicalItem() {
     override fun getLexicalType(): LexicalType = LexicalType.NEW_LINE
-    override fun isSupport(): Boolean = false
-    override fun getName(): String = "new line"
+    override fun isSupport(): Boolean = true
+    override fun getName(): String = "New line"
 }

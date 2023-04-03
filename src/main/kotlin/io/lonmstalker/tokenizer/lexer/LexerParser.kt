@@ -12,43 +12,47 @@ class LexerParser {
     /**
      * @throws io.lonmstalker.tokenizer.exception.CompileException - token not supported or reserved word
      */
-    fun parse(functionBlock: String, ctx: FunctionContext, startLine: Int) {
+    fun parse(functionBlock: String, ctx: FunctionContext, startLine: Int): LexicalItem? {
         val chars = functionBlock.toCharArray()
-        val lexerContext = LexerContext(currentLine = startLine, functionContext = ctx)
+        val lexerCtx = LexerContext(currentLine = startLine, functionContext = ctx)
 
-        chars.forEach loop@{ char ->
-            if (!lexerContext.isStart && !char.isWhitespace()) {
-                lexerContext.isStart = true
+        for ((index, char) in chars.withIndex()) {
+            if (char == SPACE) {
+                this.shiftSpace(lexerCtx, index)
+            } else if (char.isWhitespace()) {
+                lexerCtx.currentLine = lexerCtx.currentLine + 1
+                this.shiftSpace(lexerCtx, index)
+            } else {
+                this.shiftSymbol(lexerCtx, index)
             }
+            this.nextItem(lexerCtx, chars)
+        }
 
-            lexerContext.shiftIndex(char) { return@loop }
+        this.shiftSpace(lexerCtx, chars.size) // in copy of range toIndex is exclusive
+        this.nextItem(lexerCtx, chars)
 
-            if (lexerContext.endNextItem) {
-                lexerContext.addNextItem(chars)
-            }
+        return lexerCtx.previousItem
+    }
 
-            lexerContext.endNextItem = false
+    private fun nextItem(lexerCtx: LexerContext, chars: CharArray) {
+        if (lexerCtx.endNextItem) {
+            lexerCtx.addNextItem(chars)
         }
     }
 
-    /**
-     * Shift start and end indexes, that use for find tokens
-     */
-    private inline fun LexerContext.shiftIndex(char: Char, continueFunc: () -> Unit) {
-        if (char == SPACE) {
-            if (!this.startNextItem) {
-                this.endNextItem = true
-            }
-            if (this.isStart) {
-                this.startNextItem = true
-            }
-            this.startIndex++
-            continueFunc.invoke()
-        } else if (char.isWhitespace()) {
-            this.nextLine = true
-        } else {
-            this.endIndex++
-            this.startNextItem = false
+    private fun shiftSymbol(ctx: LexerContext, index: Int) {
+        if (ctx.endNextItem) {
+            ctx.startIndex = index
+        }
+        ctx.endNextItem = false
+        ctx.startNextItem = true
+    }
+
+    private fun shiftSpace(ctx: LexerContext, index: Int) {
+        if (ctx.startNextItem) {
+            ctx.endIndex = index
+            ctx.endNextItem = true
+            ctx.startNextItem = false
         }
     }
 
@@ -69,9 +73,11 @@ class LexerParser {
 
     private fun LexerContext.toItem(chars: CharArray): LexicalItem =
         if (this.endIndex - this.startIndex == 1) {
-            tokenFactory.findToken(chars[this.endIndex])
+            tokenFactory.findToken(chars[this.endIndex - 1], this)
         } else {
-            tokenFactory.findToken(chars.copyOfRange(this.startIndex, this.endIndex))
+            val symbol = chars.copyOfRange(this.startIndex, this.endIndex)
+            this.startIndex = this.startIndex + 1
+            tokenFactory.findToken(symbol, this)
         }
 
     /**

@@ -76,7 +76,7 @@ class TokenFactory {
                 error("string $value can't start from number")
             }
             if (firstSymbol == Tokens.Flow.DOUBLE_QUOTE.symbol) {
-                return ValueLexicalItem(value.substring(value.indices), Tokens.Types.STRING, StringValidator())
+                return ValueLexicalItem(value.substring(1, value.length - 1), Tokens.Types.STRING, StringValidator())
             }
             return IdentifierLexicalItem(value, IdentifierValidator())
         }

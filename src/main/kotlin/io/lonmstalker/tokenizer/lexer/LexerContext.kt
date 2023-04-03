@@ -5,11 +5,10 @@ import io.lonmstalker.tokenizer.front.FunctionContext
 data class LexerContext(
     val functionContext: FunctionContext,
 
-    var isStart: Boolean = false,
     var nextLine: Boolean = false,
 
     var endNextItem: Boolean = false,
-    var startNextItem: Boolean = true,
+    var startNextItem: Boolean = false,
 
     var currentLine: Int,
     var endIndex: Int = 0,

@@ -10,5 +10,5 @@ class IdentifierLexicalItem(
 ) : LexicalItem() {
     override fun getLexicalType(): LexicalType = LexicalType.IDENTIFIER
     override fun isSupport(): Boolean = true
-    override fun getName(): String = "identifier"
+    override fun getName(): String = "Identifier"
 }
