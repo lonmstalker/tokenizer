@@ -21,9 +21,7 @@ class Tokens {
         END_BLOCK('}'),
         START_ARG('('),
         END_ARG(')'),
-        REFERENCE('.'),
         END_LINE(';'),
-        DOUBLE_QUOTE('"')
     }
 
     enum class Keywords(val word: String) {
@@ -31,7 +29,12 @@ class Tokens {
         RETURN("return"),
         VARIABLE("let"),
         TRUE("true"),
-        FALSE("false")
+        FALSE("false"),
+        IF("if"),
+        ELSE("else"),
+        ELSE_IF("else if"),
+        FOR("for"),
+        WHILE("while")
     }
 
     enum class Types(val word: String) {

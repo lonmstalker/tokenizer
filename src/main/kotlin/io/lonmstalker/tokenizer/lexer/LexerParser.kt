@@ -1,5 +1,6 @@
 package io.lonmstalker.tokenizer.lexer
 
+import io.lonmstalker.tokenizer.enums.Tokens
 import io.lonmstalker.tokenizer.front.FunctionContext
 import io.netty.util.internal.StringUtil.SPACE
 
@@ -23,7 +24,7 @@ class LexerParser {
                 lexerCtx.currentLine = lexerCtx.currentLine + 1
                 this.shiftSpace(lexerCtx, index)
             } else {
-                this.shiftSymbol(lexerCtx, index)
+                this.shiftSymbolOrFlow(lexerCtx, char, index)
             }
             this.nextItem(lexerCtx, chars)
         }
@@ -39,6 +40,15 @@ class LexerParser {
             lexerCtx.addNextItem(chars)
         }
     }
+
+    private fun shiftSymbolOrFlow(lexerCtx: LexerContext, char: Char, index: Int) =
+        Tokens.Flow.values()
+            .firstOrNull { it.symbol == char }
+            ?.apply {
+                lexerCtx.currentFlow = this
+                shiftSpace(lexerCtx, index)
+            }
+            ?: this.shiftSymbol(lexerCtx, index)
 
     private fun shiftSymbol(ctx: LexerContext, index: Int) {
         if (ctx.endNextItem) {

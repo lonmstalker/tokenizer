@@ -1,5 +1,6 @@
 package io.lonmstalker.tokenizer.lexer
 
+import io.lonmstalker.tokenizer.enums.LexicalType
 import io.lonmstalker.tokenizer.enums.Tokens
 import io.lonmstalker.tokenizer.lexer.identifier.CallLexicalItem
 import io.lonmstalker.tokenizer.lexer.identifier.IdentifierLexicalItem
@@ -31,25 +32,30 @@ class TokenFactory {
         var isDigit = true
         var isString = true
 
-        var funcNameIndex = 0
         var isCallFunc = false
+        var reservedSymbol: Char? = null
 
-        for ((index, symbol) in token.withIndex()) {
+        for (symbol in token) {
             if (RESERVED_SYMBOLS.contains(symbol)) {
-                error("symbol $symbol can used only like operator")
+                reservedSymbol = symbol
             }
 
             if (!symbol.isDigit()) {
                 isDigit = false
             }
 
-            if (!symbol.isLetterOrDigit() && symbol != Tokens.Flow.DOUBLE_QUOTE.symbol) {
+            if (!symbol.isLetterOrDigit() && symbol != DOUBLE_QUOTE) {
                 isString = false
             }
 
-            if (!isCallFunc && symbol == Tokens.Flow.START_ARG.symbol) {
+            val isArg = lexerContext.currentFlow == Tokens.Flow.START_ARG
+            if (lexerContext.previousItem?.getLexicalType() == LexicalType.IDENTIFIER && isArg) {
                 isCallFunc = true
-                funcNameIndex = index - 1
+                lexerContext.isFindArgs = true
+            }
+
+            if (lexerContext.currentFlow == Tokens.Flow.END_ARG) {
+                lexerContext.isFindArgs = false
             }
         }
 
@@ -71,23 +77,20 @@ class TokenFactory {
         }
 
         if (isString) {
+            this.validateToken(reservedSymbol)
             val firstSymbol = value[0]
             if (firstSymbol.isDigit()) {
                 error("string $value can't start from number")
             }
-            if (firstSymbol == Tokens.Flow.DOUBLE_QUOTE.symbol) {
+            if (firstSymbol == DOUBLE_QUOTE) {
                 return ValueLexicalItem(value.substring(1, value.length - 1), Tokens.Types.STRING, StringValidator())
             }
             return IdentifierLexicalItem(value, IdentifierValidator())
         }
 
         if (isCallFunc) {
-            val name = value.substring(0..funcNameIndex)
-            val args = value
-                .substring(funcNameIndex + 2 until value.length)
-                .split(COMMA)
-                .map { this.resolveToken(it.toCharArray(), lexerContext) }
-            return CallLexicalItem(name, args)
+            val funcName = lexerContext.previousItem!! as IdentifierLexicalItem
+            return CallLexicalItem(funcName.id, mutableListOf(this.resolveToken(token, lexerContext)))
         }
 
         this.tokenNotSupported(String(token))
@@ -112,6 +115,12 @@ class TokenFactory {
         }
 
         this.tokenNotSupported(token)
+    }
+
+    private fun validateToken(reservedSymbol: Char?) {
+        if (reservedSymbol != null) {
+            error("symbol $reservedSymbol can used only like operator")
+        }
     }
 
     private fun tokenNotSupported(token: Any): Nothing = error("token $token not known")

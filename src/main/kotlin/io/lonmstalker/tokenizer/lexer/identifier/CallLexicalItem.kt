@@ -5,7 +5,7 @@ import io.lonmstalker.tokenizer.lexer.LexicalItem
 
 class CallLexicalItem(
     val id: String,
-    val args: List<LexicalItem>,
+    var args: List<LexicalItem>? = null,
 ) : LexicalItem() {
     override fun getLexicalType(): LexicalType = LexicalType.CALL
     override fun isSupport(): Boolean = false
